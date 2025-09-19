@@ -8,6 +8,8 @@
 #import "TBLAdxPlugin.h"
 #import <GoogleMobileAds/GoogleMobileAds.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 // Logging prefix constant
 static NSString * const kTBLAdxPluginLogPrefix = @"TaboolaSDK AdX Adapter:";
 
@@ -33,7 +35,8 @@ static NSString * const kTBLAdxPluginLogPrefix = @"TaboolaSDK AdX Adapter:";
     return WKAudiovisualMediaTypeNone;
 }
 
-- (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
+- (nullable WKWebView *)webView:(WKWebView *)webView
+ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
    forNavigationAction:(WKNavigationAction *)navigationAction
         windowFeatures:(WKWindowFeatures *)windowFeatures {
     // Extract URL and domain information for click handling
@@ -55,8 +58,9 @@ static NSString * const kTBLAdxPluginLogPrefix = @"TaboolaSDK AdX Adapter:";
 #pragma mark WKNavigationDelegate
 // Implemented only if extra prop TBLOpenMLUncaughtClicksInSafariCtrl = true
 
-- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
-    // Extract URL and domain information for navigation policy decision
+- (void)webView:(WKWebView *)webView
+decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
+decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
     NSURL *url = navigationAction.request.URL;
     NSString *currentDomain = webView.URL.host;
     NSString *targetDomain = navigationAction.request.URL.host;
@@ -109,3 +113,5 @@ static NSString * const kTBLAdxPluginLogPrefix = @"TaboolaSDK AdX Adapter:";
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
