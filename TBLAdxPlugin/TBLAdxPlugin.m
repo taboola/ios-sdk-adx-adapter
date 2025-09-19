@@ -19,10 +19,38 @@ static NSString * const kTBLAdxPluginLogPrefix = @"TaboolaSDK AdX Adapter:";
 @end
 
 @interface TBLAdxPlugin ()
-@property (nonatomic, weak, nullable) id<TBLPluginDelegate> delegate;
+@property (nonatomic, strong) NSMapTable<WKWebView *, id<TBLPluginDelegate>> *delegates; // weak→weak
 @end
 
 @implementation TBLAdxPlugin
+
+- (instancetype)init {
+    if ((self = [super init])) {
+        _delegates = [NSMapTable weakToWeakObjectsMapTable];
+    }
+    return self;
+}
+
+#pragma mark - Handling delegates
+
+/// Set or clear delegate for a specific webView (weakly stored)
+- (void)setDelegate:(nullable id<TBLPluginDelegate>)delegate
+         forWebView:(WKWebView *)webView {
+    if (!webView)
+        return;
+    if (delegate) {
+        [self.delegates setObject:delegate forKey:webView];
+    } else {
+        [self.delegates removeObjectForKey:webView];
+    }
+}
+
+/// Get delegate for given webview
+- (nullable id<TBLPluginDelegate>)delegateForWebView:(WKWebView *)webView {
+    return [self.delegates objectForKey:webView];
+}
+
+#pragma mark - Public methods
 
 - (void)registerWebView:(WKWebView *)webView {
     NSLog(@"%@ Registering WebView with Google Mobile Ads", kTBLAdxPluginLogPrefix);
@@ -67,6 +95,7 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
 
     // Determine whether to handle the click URL.
     if ([self didHandleClickForURL: url
+                         inWebView:webView
                      currentDomain: currentDomain
                       targetDomain: targetDomain
                   navigationAction: navigationAction]) {
@@ -78,9 +107,10 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
     decisionHandler(WKNavigationActionPolicyAllow);
 }
 
-/// Returns whether the URL has to be handled outside of WKWebView.
-/// If true, click URL is handled by the SDK's logic.
+/// Returns whether the URL has to be handled outside of WKWebView. If true, click URL
+/// is opened in SFSafariViewController by webViewManager's logic.
 - (BOOL)didHandleClickForURL:(NSURL *)url
+                   inWebView:(WKWebView *)webView
                currentDomain:(NSString *)currentDomain
                 targetDomain:(NSString *)targetDomain
             navigationAction:(WKNavigationAction *)navigationAction {
@@ -101,9 +131,11 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
     if (shouldHandleClick) {
         // pass the click control to the SDK
         NSString *urlString = [url absoluteString];
-        if (self.delegate && [self.delegate respondsToSelector:@selector(handleUrl:)]) {
+        // use delegate specifically for this webview
+        id<TBLPluginDelegate> delegate = [self delegateForWebView:webView];
+        if (delegate && [delegate respondsToSelector:@selector(handleUrl:)]) {
             NSLog(@"%@ Click delegating to SDK for URL: %@", kTBLAdxPluginLogPrefix, urlString);
-            [self.delegate handleUrl:urlString];
+            [delegate handleUrl:urlString];
         } else {
             NSLog(@"%@ Error: No delegate available to handle URL: %@", kTBLAdxPluginLogPrefix, urlString);
         }
