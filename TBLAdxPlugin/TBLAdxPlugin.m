@@ -63,6 +63,8 @@ static NSString * const kTBLAdxPluginLogPrefix = @"TaboolaSDK AdX Adapter:";
     return WKAudiovisualMediaTypeNone;
 }
 
+#pragma mark - WKWebView's delegates
+
 - (nullable WKWebView *)webView:(WKWebView *)webView
  createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
    forNavigationAction:(WKNavigationAction *)navigationAction
@@ -74,6 +76,7 @@ static NSString * const kTBLAdxPluginLogPrefix = @"TaboolaSDK AdX Adapter:";
 
     // Determine whether to handle the click URL
     if ([self didHandleClickForURL:url
+                         inWebView:webView
                      currentDomain:currentDomain
                       targetDomain:targetDomain
                   navigationAction:navigationAction]) {
@@ -83,9 +86,6 @@ static NSString * const kTBLAdxPluginLogPrefix = @"TaboolaSDK AdX Adapter:";
     return nil;
 }
 
-#pragma mark WKNavigationDelegate
-// Implemented only if extra prop TBLOpenMLUncaughtClicksInSafariCtrl = true
-
 - (void)webView:(WKWebView *)webView
 decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
 decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
@@ -94,11 +94,11 @@ decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
     NSString *targetDomain = navigationAction.request.URL.host;
 
     // Determine whether to handle the click URL.
-    if ([self didHandleClickForURL: url
+    if ([self didHandleClickForURL:url
                          inWebView:webView
-                     currentDomain: currentDomain
-                      targetDomain: targetDomain
-                  navigationAction: navigationAction]) {
+                     currentDomain:currentDomain
+                      targetDomain:targetDomain
+                  navigationAction:navigationAction]) {
         // cancel navigation, because handled outside webview
         decisionHandler(WKNavigationActionPolicyCancel);
         return;
