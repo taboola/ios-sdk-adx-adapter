@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'TaboolaSDK_AdX_Adapter'
-  s.version          = '1.0-beta-1'
+  s.version          = '1.0'
   s.summary          = 'TaboolaSDK adapter for AdX'
   s.description      = 'The Taboola Mobile Ads SDK allows you to maximize monetization for your iOS and Android apps with Taboola ads.'
 
