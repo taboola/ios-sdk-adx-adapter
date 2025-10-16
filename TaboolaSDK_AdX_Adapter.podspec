@@ -7,10 +7,11 @@ Pod::Spec.new do |s|
   s.homepage         = 'https://www.taboola.com'
   s.license          = { :type => 'Taboola Mobile SDK License', :file => 'LICENSE' }
   s.author           = { 'Taboola' => 'mobile-sdk@taboola.com' }
-  s.source           = { :git => 'https://github.com/taboola/ios-sdk-adx-adapter', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/taboola/ios-sdk-adx-adapter.git', :tag => s.version.to_s }
 
   s.platform         = :ios, '12.0'
-
+  s.swift_versions = ['5.0']
+  
   s.static_framework = true
   s.source_files = 'TBLAdxPlugin/**/*.*'
   s.public_header_files = 'TBLAdxPlugin/**/*.h'
