@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "TaboolaSDK-AdX",
     platforms: [
-        .iOS(.v12)
+        .iOS(.v13)
     ],
     products: [
         .library(
@@ -16,7 +16,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/googleads/swift-package-manager-google-mobile-ads",
-            "12.0.0"..<"13.0.0"
+            "13.0.0"..<"14.0.0"
         )
     ],
     targets: [
